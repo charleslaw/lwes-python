@@ -57,8 +57,13 @@ class LwesEvent(object):
 
     def set_STRING(self, name, value):
         self.__put_attribute(name, value, 'LWES_STRING_TOKEN')
-
     
+    def set_U_INT_16(self, name, value):
+        self.__put_attribute(name, value, 'LWES_U_INT_16_TOKEN')
+   
+    def set_INT_16(self, name, value):
+        self.__put_attribute(name, value, 'LWES_INT_16_TOKEN')
+
     def get_bytes(self, output_bytes, num_bytes, offset):
         ret = 0
         if (num_bytes == 0 or offset >= num_bytes):
