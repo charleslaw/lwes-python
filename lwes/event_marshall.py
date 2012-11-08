@@ -1,9 +1,9 @@
 """
 Marshall data into the socket message
 """
+from struct import pack
 
-
-import struct
+#TODO: Use a buffer, or something more efficient than copying strings
 
 
 def set_output(output_bytes, offset, size, input):
@@ -53,7 +53,7 @@ def marshall_LONG_STRING(input, byte_str, num_bytes, offset):
         input = input[:two_byte_len]
 
     size = str_length + 2
-    len_str = struct.pack('!H', str_length)
+    len_str = pack('!H', str_length)
     #write the length of the string & the string itself
     write_bytes = len_str + input
 
@@ -61,7 +61,7 @@ def marshall_LONG_STRING(input, byte_str, num_bytes, offset):
 
 
 def generic_marshall_pack(input, byte_str, num_bytes, offset, size, encoding):
-    write_bytes = struct.pack(encoding, input)
+    write_bytes = pack(encoding, input)
     return generic_marshall(write_bytes, byte_str, num_bytes, offset, size)
 
 def marshall_BYTE(input, buffer, num_bytes, offset):

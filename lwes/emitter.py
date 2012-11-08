@@ -1,6 +1,5 @@
-from lwes.lwes_net import lwes_net_open
+from lwes.lwes_net import lwes_net_open, MAX_MSG_SIZE
 
-MAX_MSG_SIZE = 65507
 
 class LwesEmitter(object):
     def __init__(self, address, iface, port, heartbeat_flag, heartbeat_freq,
@@ -12,7 +11,7 @@ class LwesEmitter(object):
         #    #self.lwes_net_set_ttl(ttl)
         #except:
         #    pass
-        
+
         #self.buffer =     LWES_BYTE_P
         self.buffer = ' ' * (MAX_MSG_SIZE)
         self.count = 0
@@ -20,7 +19,7 @@ class LwesEmitter(object):
         self.sequence = 0
         self.frequency = heartbeat_freq
         self.emitHeartbeat = heartbeat_flag
-        
+
         # Send an event saying we are starting up if heartbeat is enamed
         if (self.emitHeartbeat):
             pass
@@ -33,7 +32,7 @@ class LwesEmitter(object):
               lwes_event_destroy (tmp_event);
             }
             '''
-        
+
 
     def emit(self, event):
         #/* Send an event */
@@ -46,6 +45,4 @@ class LwesEmitter(object):
 
     def emit_bytes(self, buffer):
         self.connection.send(buffer)
-        #self.connection.close()
-
 

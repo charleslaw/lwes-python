@@ -1,8 +1,4 @@
-import struct
-import socket
-
-MAX_MSG_SIZE = 65507
-LWES_ENCODING  = "enc"
+from socket import inet_aton
 
 from lwes.event_marshall import marshall_SHORT_STRING, marshall_LONG_STRING, \
     marshall_BYTE, marshall_BOOLEAN, marshall_U_INT_16, marshall_INT_16, \
@@ -10,20 +6,18 @@ from lwes.event_marshall import marshall_SHORT_STRING, marshall_LONG_STRING, \
     marshall_IP_ADDR
 
 
-
-
-TYPE2_DICT = {
-              'LWES_UNDEFINED_TOKEN': chr(0xff),
-              'LWES_U_INT_16_TOKEN' : chr(0x01),
-              'LWES_INT_16_TOKEN'   : chr(0x02),
-              'LWES_U_INT_32_TOKEN' : chr(0x03),
-              'LWES_INT_32_TOKEN'   : chr(0x04),
-              'LWES_STRING_TOKEN'   : chr(0x05),
-              'LWES_IP_ADDR_TOKEN'  : chr(0x06),
-              'LWES_INT_64_TOKEN'   : chr(0x07),
-              'LWES_U_INT_64_TOKEN' : chr(0x08),
-              'LWES_BOOLEAN_TOKEN'  : chr(0x09),
-              }
+TYPE_BYTE_VALUE = {
+                   'LWES_UNDEFINED_TOKEN': chr(0xff),
+                   'LWES_U_INT_16_TOKEN' : chr(0x01),
+                   'LWES_INT_16_TOKEN'   : chr(0x02),
+                   'LWES_U_INT_32_TOKEN' : chr(0x03),
+                   'LWES_INT_32_TOKEN'   : chr(0x04),
+                   'LWES_STRING_TOKEN'   : chr(0x05),
+                   'LWES_IP_ADDR_TOKEN'  : chr(0x06),
+                   'LWES_INT_64_TOKEN'   : chr(0x07),
+                   'LWES_U_INT_64_TOKEN' : chr(0x08),
+                   'LWES_BOOLEAN_TOKEN'  : chr(0x09),
+                   }
 
 TYPE_MARSHALL = {
                  'LWES_U_INT_16_TOKEN' : marshall_U_INT_16,
@@ -84,7 +78,7 @@ class LwesEvent(object):
 
     def set_IP_ADDR(self, name, value):
         #convert the address to chars
-        ip_binary = socket.inet_aton(value)
+        ip_binary = inet_aton(value)
         self.__put_attribute(name, ip_binary, 'LWES_IP_ADDR_TOKEN')
 
     def get_bytes(self, output_bytes, num_bytes, offset):
@@ -109,41 +103,14 @@ class LwesEvent(object):
             encodingType = encodingAttr['type']
 
             if (encodingValue):
-                if encodingType == LWES_INT_16_TOKEN:
-                    ret, offset, output_bytes \
-                        = marshall_SHORT_STRING(str(LWES_ENCODING),
-                                                output_bytes,
-                                                num_bytes,
-                                                offset)
-
-                    #TODO: fix this
-                    '''
-                    if (marshall_SHORT_STRING
-                        ((LWES_SHORT_STRING)LWES_ENCODING,
-                         output_bytes,
-                         num_bytes,
-                         &offset) == 0
-                      ||
-                      marshall_BYTE
-                        (encodingType,
-                         output_bytes,
-                         num_bytes,
-                         &offset) == 0
-                      ||
-                      marshall_INT_16
-                        (*((LWES_INT_16 *)encodingValue),
-                         output_bytes,
-                         num_bytes,
-                         &offset) == 0)
-                    {
-                      return -2;
-                    }
-                    '''
+                offset, output_bytes = \
+                    TYPE_MARSHALL[encodingType](encodingValue, output_bytes,
+                                                num_bytes, offset)
 
         #now iterate over all the values in the hash
         for event_name, event_dict in self.attributes.iteritems():
             tmp_type = event_dict['type']
-            type_byte = TYPE2_DICT[tmp_type]
+            type_byte = TYPE_BYTE_VALUE[tmp_type]
 
             if tmp_type in TYPE_MARSHALL:
                 #write the event name
