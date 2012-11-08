@@ -15,9 +15,16 @@ emitter = LwesEmitter(address, interface, port,
 db = None
 event = LwesEvent (db, 'My LWES Event')
 
-        
+
 event.set_STRING("Hello", 'World')
-event.set_U_INT_16('unsigned_int', 42)
-event.set_INT_16('signed_int', -1)
+event.set_U_INT_16('unsigned_int16', 42)
+event.set_INT_16('signed_int16', -1)
+event.set_U_INT_32('unsigned_int32', 75535)
+event.set_INT_32('signed_int32', -42768)
+event.set_U_INT_64('unsigned_int64', 5294967295)
+event.set_INT_64('signed_int64', -314748364)
+event.set_BOOLEAN('boolT', True)
+event.set_BOOLEAN('boolF', False)
+event.set_IP_ADDR('addr', '127.1.255.3')
 
 emitter.emit(event)
